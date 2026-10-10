@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Michael John Woo Silva · Portfolio</title>
+<meta name="author" content="Michael John Woo Silva">
+<style>
+:root{--bg:#f3f5f2;--card:#fff;--ink:#1b2a24;--mute:#5f6f67;--line:#d9e0db;--pri:#14675a;--priInk:#fff;--no:#a62b2b;--chip:#e4ece7}
+@media (prefers-color-scheme:dark){:root{--bg:#101815;--card:#18231f;--ink:#e6eee9;--mute:#9bada4;--line:#2b3b34;--pri:#3fb5a2;--priInk:#06231e;--no:#f08a8a;--chip:#22332c}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.6 "Segoe UI",system-ui,sans-serif}
+h1,h2,h3{font-family:Georgia,serif;margin:0}
+.wrap{max-width:1000px;margin:0 auto;padding:16px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.back{display:inline-flex;align-items:center;gap:8px;color:var(--mute);font-weight:600;font-size:14px;text-decoration:none}
+.back:hover{color:var(--pri)}
+.back svg{width:16px;height:16px}
+.hero{padding:36px 0 24px;border-bottom:1px solid var(--line);margin-bottom:22px}
+.hero h1{font-size:clamp(28px,6vw,42px);line-height:1.15}
+.role{color:var(--pri);font-weight:600;margin:6px 0 12px}
+.about{max-width:640px;color:var(--mute);margin:0}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);padding:8px 14px;border-radius:8px;font:inherit;font-size:14px;cursor:pointer;text-decoration:none;display:inline-block}
+.btn:hover{border-color:var(--pri);color:var(--pri)}
+.btn.p{background:var(--pri);color:var(--priInk);border-color:var(--pri);font-weight:600}
+.btn.p:hover{color:var(--priInk);opacity:.9}
+.btn.no{color:var(--no);border-color:var(--no)}
+.btn.sm{padding:4px 10px;font-size:13px}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--pri);outline-offset:2px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--mute);padding:5px 14px;border-radius:99px;font:inherit;font-size:13px;cursor:pointer}
+.chip.on{background:var(--pri);color:var(--priInk);border-color:var(--pri);font-weight:600}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:14px}
+.work{background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column}
+.thumb{height:150px;background:var(--chip);display:flex;align-items:center;justify-content:center;font:700 44px Georgia,serif;color:var(--pri)}
+.thumb img{width:100%;height:100%;object-fit:contain;padding:14px;display:block}
+.body{padding:14px;display:flex;flex-direction:column;gap:8px;flex:1}
+.meta{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:var(--mute)}
+.cat{font-weight:700;color:var(--pri);text-transform:uppercase;letter-spacing:.04em}
+.work h3{font-size:18px}
+.work p{margin:0;color:var(--mute);font-size:14px}
+.tags{display:flex;gap:6px;flex-wrap:wrap}
+.tag{background:var(--chip);border-radius:6px;padding:1px 8px;font-size:12px}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:auto;padding-top:6px}
+.empty{padding:34px;text-align:center;color:var(--mute);border:1px dashed var(--line);border-radius:12px;grid-column:1/-1}
+.bar{display:none;gap:8px;flex-wrap:wrap;align-items:center;background:var(--card);border:1px solid var(--pri);border-radius:10px;padding:10px 12px;margin-bottom:16px}
+body.edit .bar{display:flex}
+.bar .mute{font-size:13px;color:var(--mute);flex:1;min-width:200px}
+.edit-only{display:none}
+body.edit .edit-only{display:inline-block}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:16px;z-index:9}
+.modal.on{display:flex}
+.modal .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;width:100%;max-width:460px;max-height:92%;overflow:auto}
+label{display:block;font-size:13px;color:var(--mute);margin:10px 0 3px}
+input,select,textarea{width:100%;padding:9px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);font:inherit}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.err{color:var(--no);font-size:13px;min-height:18px;margin-top:8px}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;display:none;z-index:10}
+footer{margin-top:34px;padding:18px 0;border-top:1px solid var(--line);text-align:center;font-size:12.5px;color:var(--mute)}
+footer b{color:var(--ink);font-weight:600}
+.lnk{background:none;border:0;color:var(--mute);font:inherit;font-size:12.5px;text-decoration:underline;cursor:pointer;margin-top:6px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <section class="hero">
+    <h1>Michael John Woo Silva</h1>
+    <!-- EDIT ME: your role -->
+    <div class="role">Web Developer · Cebu City, Philippines</div>
+    <!-- EDIT ME: a short about-me (2 to 3 sentences) -->
+    <p class="about">I build practical web systems for schools and small organizations. Below are the projects and works I have created.</p>
+  </section>
+
+  <div class="bar" id="bar">
+    <span class="mute"><b>Edit mode.</b> Changes are saved in this browser. Click Export and put the file in your portfolio folder as works.json to publish them.</span>
+    <button class="btn p sm" onclick="openForm(-1)">+ Add work</button>
+    <button class="btn sm" onclick="exportJson()">Export</button>
+    <button class="btn sm" onclick="document.getElementById('imp').click()">Import</button>
+    <button class="btn no sm" onclick="resetLocal()">Reset to published</button>
+    <input type="file" id="imp" accept="application/json,.json" style="display:none" onchange="importJson(this)">
+  </div>
+
+  <div class="chips" id="chips"></div>
+  <div class="grid" id="grid"></div>
+
+  <footer>
+    Designed and developed by <b>Michael John Woo Silva</b><br>
+    Cebu City, Philippines<br>
+    &copy; 2026 All rights reserved.<br>
+    <button class="lnk" id="editBtn" onclick="toggleEdit()">Edit mode</button>
+  </footer>
+</div>
+
+<div class="modal" id="modal"><div class="card">
+  <h2 id="mt">Add work</h2>
+  <label for="f_title">Title</label><input id="f_title" maxlength="80">
+  <div class="two">
+    <div><label for="f_cat">Category</label><input id="f_cat" list="cats" placeholder="e.g. Web app" maxlength="30"><datalist id="cats"></datalist></div>
+    <div><label for="f_year">Year</label><input id="f_year" maxlength="9" placeholder="2026"></div>
+  </div>
+  <label for="f_desc">Description</label><textarea id="f_desc" rows="3" maxlength="400" placeholder="What it does and what you did"></textarea>
+  <label for="f_tech">Tools used (separate with commas)</label><input id="f_tech" placeholder="Node.js, Express, Turso">
+  <label for="f_link">Link (optional)</label><input id="f_link" placeholder="https://...">
+  <label for="f_img">Image link (optional)</label><input id="f_img" placeholder="https://... or images/my-photo.png">
+  <div class="err" id="ferr"></div>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button class="btn p" onclick="saveWork()">Save</button>
+    <button class="btn" onclick="closeForm()">Cancel</button>
+  </div>
+</div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+var KEY = 'portfolio_works_v1';
+var works = [], edit = false, filter = 'All', editing = -1;
+
+// Shown only if there is no saved list and no works.json yet.
+var SAMPLE = [{
+  title: 'EquipTrack',
+  category: 'Web app',
+  year: '2026',
+  description: 'Equipment borrowing and reservation system for school laboratories, with requests, laboratory checking of returned items, and admin penalties.',
+  tech: ['Node.js', 'Express', 'Turso', 'Render'],
+  link: 'https://equiptrack-p7vr.onrender.com', image: ''
+}];
+
+function $(id) { return document.getElementById(id); }
+function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+  return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+function safeUrl(u) { u = String(u || '').trim(); return /^https?:\/\//i.test(u) ? u : ''; }
+function safeImg(u) { u = String(u || '').trim(); return /^(https?:\/\/|images\/)/i.test(u) ? u : ''; }
+function toast(m) { var t = $('toast'); t.textContent = m; t.style.display = 'block'; setTimeout(function () { t.style.display = 'none'; }, 2600); }
+
+// Saved list in this browser first, then the published works.json, then the sample.
+function load() {
+  try { var s = localStorage.getItem(KEY); if (s) { works = JSON.parse(s); return Promise.resolve(); } } catch (e) {}
+  return fetch('works.json').then(function (r) { if (!r.ok) throw 0; return r.json(); })
+    .then(function (l) { works = Array.isArray(l) ? l : SAMPLE.slice(); })
+    .catch(function () { works = SAMPLE.slice(); });
+}
+function save() { try { localStorage.setItem(KEY, JSON.stringify(works)); } catch (e) { toast('Could not save in this browser.'); } }
+
+function render() {
+  var cats = ['All'];
+  works.forEach(function (w) { if (w.category && cats.indexOf(w.category) < 0) cats.push(w.category); });
+  if (cats.indexOf(filter) < 0) filter = 'All';
+  $('chips').innerHTML = cats.length > 2 ? cats.map(function (c) {
+    return '<button class="chip' + (c === filter ? ' on' : '') + '" onclick="setFilter(this.dataset.c)" data-c="' + esc(c) + '">' + esc(c) + '</button>';
+  }).join('') : '';
+  $('cats').innerHTML = cats.slice(1).map(function (c) { return '<option value="' + esc(c) + '">'; }).join('');
+
+  var list = works.map(function (w, i) { return { w: w, i: i }; })
+    .filter(function (x) { return filter === 'All' || x.w.category === filter; });
+  $('grid').innerHTML = list.length ? list.map(function (x) {
+    var w = x.w, img = safeImg(w.image), link = safeUrl(w.link);
+    return '<article class="work"><div class="thumb">' +
+      (img ? '<img src="' + esc(img) + '" alt="' + esc(w.title) + '" loading="lazy" onerror="this.parentNode.textContent=\'' + esc((w.title || '?').charAt(0).toUpperCase()) + '\'">' : esc((w.title || '?').charAt(0).toUpperCase())) +
+      '</div><div class="body"><div class="meta"><span class="cat">' + esc(w.category || 'Work') + '</span><span>' + esc(w.year) + '</span></div>' +
+      '<h3>' + esc(w.title) + '</h3><p>' + esc(w.description) + '</p>' +
+      ((w.tech || []).length ? '<div class="tags">' + w.tech.map(function (t) { return '<span class="tag">' + esc(t) + '</span>'; }).join('') + '</div>' : '') +
+      '<div class="acts">' + (link ? '<a class="btn p sm" href="' + esc(link) + '" target="_blank" rel="noopener noreferrer">View work</a>' : '') +
+      '<button class="btn sm edit-only" onclick="openForm(' + x.i + ')">Edit</button>' +
+      '<button class="btn no sm edit-only" onclick="delWork(' + x.i + ')">Delete</button></div></div></article>';
+  }).join('') : '<div class="empty">No works yet.' + (edit ? ' Click “+ Add work” to encode your first one.' : '') + '</div>';
+}
+function setFilter(c) { filter = c; render(); }
+
+function toggleEdit() {
+  edit = !edit;
+  document.body.classList.toggle('edit', edit);
+  $('editBtn').textContent = edit ? 'Leave edit mode' : 'Edit mode';
+  render();
+}
+
+function openForm(i) {
+  editing = i;
+  var w = i >= 0 ? works[i] : { title: '', category: '', year: String(new Date().getFullYear()), description: '', tech: [], link: '', image: '' };
+  $('mt').textContent = i >= 0 ? 'Edit work' : 'Add work';
+  $('f_title').value = w.title; $('f_cat').value = w.category || ''; $('f_year').value = w.year || '';
+  $('f_desc').value = w.description || ''; $('f_tech').value = (w.tech || []).join(', ');
+  $('f_link').value = w.link || ''; $('f_img').value = w.image || ''; $('ferr').textContent = '';
+  $('modal').classList.add('on'); $('f_title').focus();
+}
+function closeForm() { $('modal').classList.remove('on'); }
+
+function saveWork() {
+  var w = {
+    title: $('f_title').value.trim(), category: $('f_cat').value.trim() || 'Work', year: $('f_year').value.trim(),
+    description: $('f_desc').value.trim(),
+    tech: $('f_tech').value.split(',').map(function (t) { return t.trim(); }).filter(Boolean),
+    link: $('f_link').value.trim(), image: $('f_img').value.trim()
+  };
+  if (!w.title) { $('ferr').textContent = 'Enter the title of the work.'; return; }
+  if (w.link && !safeUrl(w.link)) { $('ferr').textContent = 'The link must start with http:// or https://'; return; }
+  if (w.image && !safeImg(w.image)) { $('ferr').textContent = 'Use a link starting with https:// or a file like images/my-photo.png'; return; }
+  if (editing >= 0) works[editing] = w; else works.unshift(w);
+  save(); closeForm(); render(); toast('Saved');
+}
+function delWork(i) {
+  if (!confirm('Delete "' + works[i].title + '"?')) return;
+  works.splice(i, 1); save(); render();
+}
+
+function exportJson() {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(works, null, 2)], { type: 'application/json' }));
+  a.download = 'works.json'; a.click(); URL.revokeObjectURL(a.href);
+  toast('Saved works.json. Put it in your portfolio folder.');
+}
+function importJson(inp) {
+  var f = inp.files[0]; if (!f) return;
+  var r = new FileReader();
+  r.onload = function () {
+    try { var l = JSON.parse(r.result); if (!Array.isArray(l)) throw 0; works = l; save(); render(); toast('Imported ' + l.length + ' work(s)'); }
+    catch (e) { toast('That file is not a valid works.json.'); }
+    inp.value = '';
+  };
+  r.readAsText(f);
+}
+function resetLocal() {
+  if (!confirm('Remove the changes saved in this browser and show the published list?')) return;
+  try { localStorage.removeItem(KEY); } catch (e) {}
+  load().then(render);
+}
+
+document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeForm(); });
+load().then(render);
+</script>
+</body>
+</html>
