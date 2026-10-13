@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 140" width="520" height="140" role="img" aria-label="Secondhand Atlas">
+  <title>Secondhand Atlas</title>
+  <!-- icon -->
+  <rect x="10" y="10" width="120" height="120" rx="28" fill="#1D2B33"/>
+  <g fill="none" stroke="#FFFFFF" stroke-opacity="0.28" stroke-width="2.5">
+    <circle cx="70" cy="70" r="46"/>
+    <ellipse cx="70" cy="70" rx="20" ry="46"/>
+    <line x1="24" y1="70" x2="116" y2="70"/>
+    <path d="M30 49 Q70 58 110 49"/>
+    <path d="M30 91 Q70 82 110 91"/>
+  </g>
+  <!-- map pin -->
+  <path d="M70 110 C70 110 42 84 42 62 A28 28 0 0 1 98 62 C98 84 70 110 70 110 Z"
+        fill="#0F6CBD" stroke="#1D2B33" stroke-width="5" stroke-linejoin="round"/>
+  <circle cx="70" cy="62" r="10" fill="#FFFFFF"/>
+  <!-- wordmark -->
+  <text x="152" y="76" font-family="Georgia, 'Times New Roman', serif" font-size="46" font-weight="700" fill="#1D2B33">Secondhand</text>
+  <text x="154" y="110" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" letter-spacing="11" fill="#0F6CBD">ATLAS</text>
+</svg>
