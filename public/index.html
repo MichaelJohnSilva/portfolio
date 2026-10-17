@@ -200,7 +200,6 @@ input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line2)
         </div>
       </div>
 
-      <!-- Profile picture. Empty frame until you add your photo. -->
       <div class="avatar in-up" id="avatar" style="--d:.25s" onclick="avatarClick()" title="Profile photo">
         <div class="face">
           <div class="ph" id="pPh">
@@ -249,12 +248,12 @@ input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line2)
       </div>
 
       <div class="bar" id="bar">
-        <span class="note"><b>Owner edit mode.</b> Changes are saved in this browser only. Click Export, put works.json in your portfolio folder, then push to publish. To change your profile picture, use the buttons under it at the top, then click Download photo and put photo.jpg in the images folder.</span>
+        <span class="note"><b>Owner edit mode.</b> Works you add, edit or delete are saved to the database and appear for every visitor within about 20 seconds. The profile picture still comes from images/photo.jpg: use the buttons under it, click Download photo, then put photo.jpg in the images folder and push.</span>
         <button class="btn p sm" onclick="openForm(-1)">+ Add work</button>
-        <button class="btn sm" onclick="exportJson()">Export</button>
+        <button class="btn sm" onclick="exportJson()">Export backup</button>
         <button class="btn sm" onclick="document.getElementById('imp').click()">Import</button>
         <button class="btn sm" onclick="downloadPhoto()">Download photo</button>
-        <button class="btn no sm" onclick="resetLocal()">Reset to published</button>
+        <button class="btn sm" onclick="resetLocal()">Refresh</button>
         <button class="btn sm" onclick="toggleEdit()">Leave edit mode</button>
         <input type="file" id="imp" accept="application/json,.json" style="display:none" onchange="importJson(this)">
       </div>
@@ -347,16 +346,15 @@ var PROFILE = {
   skills: {
     'Front end': ['HTML', 'CSS', 'JavaScript', 'Responsive design'],
     'Back end': ['Node.js', 'Express', 'REST APIs', 'SQLite and Turso'],
-    'Tools and hosting': ['Git and GitHub', 'Render', 'VS Code']
+    'Tools and hosting': ['Git and GitHub', 'Cloudflare']
   },
   email: '',
   github: 'https://github.com/MichaelJohnSilva',
   resume: ''
 };
 
-// v2 ignores any older list saved in browsers by earlier versions.
-var KEY = 'portfolio_works_v2', PKEY = 'portfolio_photo_v1';
-var works = [], edit = false, filter = 'All', editing = -1;
+var PKEY = 'portfolio_photo_v1';
+var works = [], edit = false, filter = 'All', editing = -1, ADMIN = '';
 var REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 function $(id) { return document.getElementById(id); }
@@ -538,15 +536,27 @@ function downloadPhoto() {
   toast('Saved photo.jpg. Put it in your images folder, then push.');
 }
 
-// ---------- load and save works ----------
-// Order: list saved in this browser, then works.json, then an empty list.
-function load() {
-  try { var s = localStorage.getItem(KEY); if (s) { works = JSON.parse(s); return Promise.resolve(); } } catch (e) {}
-  return fetch('works.json').then(function (r) { if (!r.ok) throw 0; return r.json(); })
-    .then(function (l) { works = Array.isArray(l) ? l : []; })
-    .catch(function () { works = []; });
+// ---------- Turso database through /api/works ----------
+function api(method, path, body) {
+  return fetch('/api/works' + (path || ''), {
+    method: method,
+    headers: { 'Content-Type': 'application/json', 'x-admin': ADMIN },
+    body: body ? JSON.stringify(body) : undefined
+  }).then(function (r) {
+    if (r.status === 401) { ADMIN = ''; throw new Error('Wrong or expired passcode.'); }
+    if (!r.ok) throw new Error('Server error ' + r.status);
+    return r.json();
+  });
 }
-function save() { try { localStorage.setItem(KEY, JSON.stringify(works)); return true; } catch (e) { toast('Could not save in this browser.'); return false; } }
+function load() {
+  return api('GET').then(function (l) { works = Array.isArray(l) ? l : []; })
+    .catch(function () {
+      if (works.length) return;
+      return fetch('works.json').then(function (r) { if (!r.ok) throw 0; return r.json(); })
+        .then(function (l) { works = Array.isArray(l) ? l : []; })
+        .catch(function () { works = []; });
+    });
+}
 
 // ---------- draw ----------
 function cardHTML(w, i, d) {
@@ -632,44 +642,39 @@ function saveWork() {
   if (!w.title) { $('ferr').textContent = 'Enter the title of the work.'; return; }
   if (w.link && !safeUrl(w.link)) { $('ferr').textContent = 'The link must start with http:// or https://'; return; }
   if (w.image && !safeImg(w.image)) { $('ferr').textContent = 'That image is not valid. Choose the file again.'; return; }
-  if (editing >= 0) works[editing] = w; else works.unshift(w);
-  if (save()) toast('Saved');
-  closeForm(); render();
+  var p = editing >= 0 ? api('PUT', '?id=' + works[editing].id, w) : api('POST', '', w);
+  p.then(function () { toast('Saved'); closeForm(); return load(); }).then(render)
+    .catch(function (e) { $('ferr').textContent = e.message; });
 }
 function delWork(i) {
   if (!confirm('Delete "' + works[i].title + '"?')) return;
-  works.splice(i, 1); save(); render();
+  api('DELETE', '?id=' + works[i].id).then(load).then(render).catch(function (e) { toast(e.message); });
 }
 
 function exportJson() {
   var a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([JSON.stringify(works, null, 2)], { type: 'application/json' }));
   a.download = 'works.json'; a.click(); URL.revokeObjectURL(a.href);
-  toast('Saved works.json. Put it in your portfolio folder, then push.');
+  toast('Saved a backup copy as works.json.');
 }
 function importJson(inp) {
   var f = inp.files[0]; if (!f) return;
   var r = new FileReader();
   r.onload = function () {
-    try { var l = JSON.parse(r.result); if (!Array.isArray(l)) throw 0; works = l; save(); render(); toast('Imported ' + l.length + ' work(s)'); }
-    catch (e) { toast('That file is not a valid works.json.'); }
+    var l; try { l = JSON.parse(r.result); if (!Array.isArray(l)) throw 0; } catch (e) { toast('That file is not a valid works.json.'); inp.value = ''; return; }
+    l.slice().reverse().reduce(function (p, w) { return p.then(function () { return api('POST', '', w); }); }, Promise.resolve())
+      .then(load).then(function () { render(); toast('Imported ' + l.length + ' work(s)'); })
+      .catch(function (e) { toast(e.message); });
     inp.value = '';
   };
   r.readAsText(f);
 }
 function resetLocal() {
-  if (!confirm('Remove the changes saved in this browser and show the published list?')) return;
-  try { localStorage.removeItem(KEY); localStorage.removeItem(PKEY); } catch (e) {}
-  load().then(function () { render(); loadPhoto(); });
+  load().then(function () { render(); toast('Refreshed from the database.'); });
 }
 
 // ---------- owner-only edit mode ----------
 // Open with Ctrl+Shift+E, or add #owner to the address (works on a phone).
-var OWNER_HASH = 'ffc62e7771041245aaa5afdd383f985594c152f2b9de2b8ccf62f44e781d2b29';
-async function sha256(s) {
-  var b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(s));
-  return Array.from(new Uint8Array(b)).map(function (x) { return x.toString(16).padStart(2, '0'); }).join('');
-}
 function toggleEdit() {
   edit = !edit;
   document.body.classList.toggle('edit', edit);
@@ -684,8 +689,13 @@ function closePw() { $('pwModal').classList.remove('on'); $('pw').value = ''; }
 async function checkPw() {
   var p = $('pw').value;
   if (!p) return;
-  if ((await sha256(p)) === OWNER_HASH) { closePw(); toggleEdit(); }
-  else { $('pwErr').textContent = 'Wrong passcode.'; $('pw').value = ''; $('pw').focus(); }
+  ADMIN = p;
+  try { await api('GET', '?auth=1'); closePw(); toggleEdit(); }
+  catch (e) {
+    ADMIN = '';
+    $('pwErr').textContent = e.message.indexOf('Wrong') === 0 ? 'Wrong passcode.' : 'Could not reach the server.';
+    $('pw').value = ''; $('pw').focus();
+  }
 }
 document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape') { closeForm(); closePw(); }
@@ -693,6 +703,13 @@ document.addEventListener('keydown', function (e) {
   if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'e') { e.preventDefault(); ownerEdit(); }
 });
 if (location.hash === '#owner') { history.replaceState(null, '', location.pathname); ownerEdit(); }
+
+// near real-time: visitors see database changes within about 20 seconds without refreshing
+setInterval(function () {
+  if (document.hidden || $('modal').classList.contains('on')) return;
+  var before = JSON.stringify(works);
+  api('GET').then(function (l) { if (JSON.stringify(l) !== before) { works = l; render(); } }).catch(function () {});
+}, 20000);
 
 initProfile();
 load().then(render);
